@@ -1,18 +1,12 @@
-const express = require('express');
-const mysql = require('mysql');
-const app = express();
-
-const db = mysql.createConnection({ host: 'localhost', user: 'root', password: '' });
-
-app.get('/user', (req, res) => {
-    // Vulnerabilidad de Inyección SQL para detección de SAST / CodeQL
-    const userId = req.query.id;
-    const query = "SELECT * FROM users WHERE id = '" + userId + "'";
+// CÓDIGO VULNERABLE (SQL Injection)
+app.get('/api/login', (req, res) => {
+    const userInput = req.query.user;
     
-    db.query(query, (err, result) => {
+    // Vulnerabilidad: Concatenación directa de entradas de usuario
+    const query = "SELECT * FROM users WHERE username = '" + userInput + "'";
+    
+    db.query(query, (err, results) => {
         if (err) throw err;
-        res.send(result);
+        res.send(results);
     });
 });
-
-app.listen(3000);
